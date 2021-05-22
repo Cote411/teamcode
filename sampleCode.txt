@@ -10,3 +10,33 @@ leftFront.setPower(v1);
 rightFront.setPower(v2);
 leftRear.setPower(v3)
 rightRear.setPower(v4);
+
+public void test(){
+        double Speed = -gamepad1.left_stick_y;
+        double Turn = gamepad1.left_stick_x;
+        double Strafe = gamepad1.right_stick_x;
+        double MAX_SPEED = 1.0;
+        holonomic(Speed, Turn, Strafe, MAX_SPEED );
+    }
+
+    public void holonomic(double Speed, double Turn, double Strafe, double MAX_SPEED){
+
+//      Left Front = +Speed + Turn - Strafe      Right Front = +Speed - Turn + Strafe
+//      Left Rear  = +Speed + Turn + Strafe      Right Rear  = +Speed - Turn - Strafe
+
+        double Magnitude = abs(Speed) + abs(Turn) + abs(Strafe);
+        Magnitude = (Magnitude > 1) ? Magnitude : 1; //Set scaling to keep -1,+1 range
+
+        leftFrontMotor.setPower(scale((scaleInput(Speed) + scaleInput(Turn) - scaleInput(Strafe)),
+                -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        if (leftRearMotor != null) {
+            leftRearMotor.setPower(scale((scaleInput(Speed) + scaleInput(Turn) + scaleInput(Strafe)),
+                    -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        }
+        rightFrontMotor.setPower(scale((scaleInput(Speed) - scaleInput(Turn) + scaleInput(Strafe)),
+                -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        if (rightRearMotor != null) {
+            rightRearMotor.setPower(scale((scaleInput(Speed) - scaleInput(Turn) - scaleInput(Strafe)),
+                    -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        }
+    }
